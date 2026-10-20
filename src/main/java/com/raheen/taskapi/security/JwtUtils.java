@@ -3,6 +3,7 @@ package com.raheen.taskapi.security;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
@@ -12,8 +13,11 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtils {
 
-    private final String jwtSecret = "mySuperSecureAndVeryLongSecretKeyForTaskApiWithEnoughLengthToBeSecure2026AndBeyondWithExtraCharacters";
-    private final int jwtExpirationMs = 86400000; // 24 hours
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration:86400000}")
+    private int jwtExpirationMs;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());

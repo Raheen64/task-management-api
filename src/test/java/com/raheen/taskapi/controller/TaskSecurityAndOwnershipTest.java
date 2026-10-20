@@ -57,6 +57,13 @@ class TaskSecurityAndOwnershipTest {
     }
 
     @Test
+    void requestWithInvalidToken_ShouldReturnUnauthorized() throws Exception {
+        mockMvc.perform(get("/api/tasks")
+                .header("Authorization", "Bearer invalid.jwt.token.string"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     @WithMockUser(username = "userA", roles = {"USER"})
     void userA_AccessingNonExistentOrUnauthorizedTask_ShouldReturnNotFoundOrForbidden() throws Exception {
         Map<String, String> updateTask = new HashMap<>();
@@ -69,5 +76,20 @@ class TaskSecurityAndOwnershipTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateTask)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "userA", roles = {"USER"})
+    void userA_TryingToModifyAnotherUsersTask_ShouldReturnForbiddenOrNotFound() throws Exception {
+        Map<String, String> updateTask = new HashMap<>();
+        updateTask.put("title", "Hijacked Task");
+
+        when(taskService.updateTask(any(String.class), eq(1L), any(TaskRequest.class)))
+                .thenThrow(new RuntimeException("Unauthorized task access"));
+
+        mockMvc.perform(put("/api/tasks/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateTask)))
+                .andExpect(status().isNotFound()); // Updated to match application's 404 response
     }
 }

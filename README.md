@@ -247,7 +247,7 @@ Verify that:
 
 ## Continuous Integration
 
-The GitHub Actions workflow in `.github/workflows/ci.yml` is configured to run Maven tests on pushes and pull requests targeting `main` or `master`. Build and test results are automatically validated in the cloud on every push.
+The GitHub Actions workflow in `.github/workflows/ci.yml` is configured to run Maven tests on pushes and pull requests targeting `main`. Build and test results are automatically validated in the cloud on every push.
 
 ## Current Scope and Future Improvements
 
